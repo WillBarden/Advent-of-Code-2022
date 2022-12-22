@@ -4,7 +4,7 @@ from utils import sort, lcap, rcap
 
 def get_test_data():
   batch = []
-  with open('day1/calories.txt', 'r') as f:
+  with open('day1/input.txt', 'r') as f:
     for line in (line.strip() for line in f.readlines()):
       if len(line) == 0:
         yield batch

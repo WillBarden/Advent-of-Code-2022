@@ -11,7 +11,7 @@ ORDER = [ROCK, PAPER, SCISSORS]
 
 
 def get_strategy():
-  with open('day2/strategy.txt') as f:
+  with open('day2/input.txt') as f:
     for line in f:
       first, second = line.strip().split(' ')
       yield (first, second)

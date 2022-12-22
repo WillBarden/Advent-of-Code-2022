@@ -4,7 +4,7 @@ from types import GeneratorType
 
 
 def get_rucksacks():
-  with open('day3/rucksacks.txt') as f:
+  with open('day3/input.txt') as f:
     for line in f:
       yield line.strip()
 
