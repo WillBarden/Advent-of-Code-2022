@@ -1,90 +1,108 @@
-import functools
+from functools import reduce
+
 
 ROCK = 'Rock'
 PAPER = 'Paper'
 SCISSORS = 'Scissors'
 WIN = 'Win'
-LOSE = 'Lose'
+LOSS = 'Lose'
 DRAW = 'Draw'
+ORDER = [ROCK, PAPER, SCISSORS]
+
 
 def get_strategy():
   with open('day2/strategy.txt') as f:
     for line in f:
-      play, response = line.strip().split(' ')
-      play = {
-        'A': ROCK,
-        'B': PAPER,
-        'C': SCISSORS
-      }[play]
-      response = {
-        'X': ROCK,
-        'Y': PAPER,
-        'Z': SCISSORS
-      }[response]
-      yield (play, response)
+      first, second = line.strip().split(' ')
+      yield (first, second)
+
 
 def winning_shape(shape):
-  if shape == ROCK:
-    return PAPER
-  elif shape == PAPER:
-    return SCISSORS
-  else: # Scissors
-    return ROCK
+  '''
+  Get the shape that beats the specified shape
+  '''
+  return ORDER[(ORDER.index(shape) + 1) % len(ORDER)]
+
 
 def losing_shape(shape):
-  if shape == ROCK:
-    return SCISSORS
-  elif shape == PAPER:
-    return ROCK
-  else: # Scissors
-    return PAPER
+  '''
+  Get the shape that loses to the specified shape
+  '''
+  return ORDER[(ORDER.index(shape) - 1) % len(ORDER)]
 
-def round_value(play, response):
-  if play == response: # Draw
-    return 3
-  elif response == winning_shape(play): # Win
-    return 6
-  else: # Loss
-    return 0
-
-def expected_response(condition, value):
-  if condition == WIN:
-    return winning_shape(value)
-  elif condition == LOSE:
-    return losing_shape(value)
-  else: # Draw
-    return value
 
 def shape_value(shape):
-  if shape == ROCK:
-    return 1
-  elif shape == PAPER:
-    return 2
-  else: # Scissors
-    return 3
+  '''
+  Return the value score of the shape
+  '''
+  return { ROCK: 1, PAPER: 2, SCISSORS: 3 }[shape]
 
-def part1_results(play, response):
-  return shape_value(response) + round_value(play, response)
+
+def outcome(first_shape, second_shape):
+  '''
+  Get the outcome value based on the shape matchups
+  '''
+  if winning_shape(first_shape) == second_shape:
+    return WIN
+  elif first_shape == winning_shape(second_shape):
+    return LOSS
+  elif first_shape == second_shape:
+    return DRAW
+
+
+def outcome_value(outcome):
+  '''
+  Return the score for the specified outcome
+  '''
+  return { WIN: 6, DRAW: 3, LOSS: 0 }[outcome]
+
+
+def expected_second_shape(first_shape, outcome):
+  '''
+  Get the second symbol required for the desired outcome
+  '''
+  if outcome == WIN:
+    return winning_shape(first_shape)
+  elif outcome == LOSS:
+    return losing_shape(first_shape)
+  else:
+    return first_shape
+
+
+def expected_outcome(symbol):
+  '''
+  Return the expected outcome based on the symbol
+  '''
+  return { 'X': LOSS, 'Y': DRAW, 'Z': WIN }[symbol]
+
+
+def first_shape(shape):
+  '''
+  Return the shape based on the first symbol
+  '''
+  return { 'A': ROCK, 'B': PAPER, 'C': SCISSORS }[shape]
+
+
+def second_shape(shape):
+  '''
+  Return the shape based on the second symbol
+  '''
+  return { 'X': ROCK, 'Y': PAPER, 'Z': SCISSORS }[shape]
+
 
 def part1():
-  return functools.reduce(
-    lambda score, round : score + part1_results(round[0], round[1]), # Sum score
-    get_strategy(), 
-    0
-  )
+  def result(first_symbol, second_symbol):
+    shapes = (first_shape(first_symbol), second_shape(second_symbol))
+    return outcome_value(outcome(shapes[0], shapes[1])) + shape_value(shapes[1])
+  return reduce(lambda score, round : score + result(round[0], round[1]), get_strategy(), 0)
 
-def part2_results(play, expected):
-  print((play, expected))
-  response = { 'X': LOSE, 'Y': DRAW, 'Z': WIN }[expected]
-  print((play, response))
-  # return part1_results(play, response)
 
 def part2():
-  return functools.reduce(
-    lambda score, round : score + part2_results(round[0], round[1]), # Sum score
-    get_strategy(), 
-    0
-  )
+  def result(first_symbol, second_symbol):
+    exp_outcome = expected_outcome(second_symbol)
+    return outcome_value(exp_outcome) + shape_value(expected_second_shape(first_shape(first_symbol), exp_outcome))
+  return reduce(lambda score, round : score + result(round[0], round[1]), get_strategy(), 0)
+
 
 def run():
   print('Day 2')
