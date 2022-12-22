@@ -12,13 +12,13 @@ def get_test_data():
       else:
         batch.append(int(line))
 
-def top_calories():
+def part1():
   return functools.reduce(lambda agg, val : max(sum(val), agg), get_test_data(), 0)
 
-def top3_calories():
+def part2():
   return sum(functools.reduce(lambda agg, val : lcap(sort([sum(val), *agg]), 3), get_test_data(), []))
 
 def run():
   print('Day 1')
-  print(top_calories())
-  print(top3_calories())
+  print(part1())
+  print(part2())
