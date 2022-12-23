@@ -43,8 +43,11 @@ class Directory:
     self.parent = parent
     self.children = []
 
+  def get_size(self):
+    return sum([child.get_size() for child in self.children])
+
   def print(self, prefix=''):
-    print(prefix + self.name)
+    print(prefix + self.name + ' [' + str(self.get_size()) + ']')
     for child in self.children:
       child.print(prefix + ' ') 
 
@@ -52,7 +55,10 @@ class Directory:
 class File:
   def __init__(self, name, size):
     self.name = name
-    self.size = size
+    self.size = int(size)
+
+  def get_size(self):
+    return self.size
 
   def print(self, prefix=''):
     print(prefix + self.name + ' [' + str(self.size) + ']')
@@ -65,6 +71,8 @@ class FsBuilder():
   def cd(self, name):
     if name == '..':
       self.pwd = self.pwd.parent if self.pwd.parent else self.pwd
+    elif name == '/':
+      self.pwd = self.root
     else:
       for child in self.pwd.children:
         if isinstance(child, Directory) and child.name == name:
@@ -79,7 +87,7 @@ class FsBuilder():
     self.pwd.children.append(d)
 
 
-def part1():
+def get_fs():
   builder = None
   for line in get_lines():
     if not builder and line[0] == CMD and line[1][0] == 'cd':
@@ -90,7 +98,12 @@ def part1():
       builder.createFile(line[2], line[1])
     elif line[0] == DIR:
       builder.createDir(line[1])
-  builder.root.print()
+  builder.cd('/')
+  return builder.root
+
+def part1():
+  fs = get_fs()
+  fs.print()
   
 
 def part2():
