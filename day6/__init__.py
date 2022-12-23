@@ -24,16 +24,20 @@ def unique(values):
   return True
 
 
-def part1():
+def first_unique_chunk(line, unique_chunk_len):
   buffer = []
-  for i, ch in enumerate(get_input()):
-    buffer = add_to_buffer(buffer, ch, 4)
-    if len(buffer) == 4 and unique(buffer):
+  for i, ch in enumerate(line):
+    buffer = add_to_buffer(buffer, ch, unique_chunk_len)
+    if len(buffer) == unique_chunk_len and unique(buffer):
       return i + 1
 
 
+def part1():
+  return first_unique_chunk(get_input(), 4)
+
+
 def part2():
-  pass
+  return first_unique_chunk(get_input(), 14)
 
 
 def run():
