@@ -44,6 +44,13 @@ def move_crate(crates, src, dst, moves=1):
   return crates
 
 
+def move_crates(crates, src, dst, count=1):
+  moving_crates = crates[src][-count:]
+  crates[src] = crates[src][:-count]
+  crates[dst] += moving_crates
+  return crates
+
+
 def last(values):
   return values[len(values) - 1]
 
@@ -59,7 +66,13 @@ def part1():
   
 
 def part2():
-  pass
+  crates, moves = get_input()
+  crates = reduce(
+    lambda crates, move : move_crates(crates, move[1], move[2], move[0]),
+    moves,
+    crates
+  )
+  return ''.join([last(crate) for crate in crates])
 
 
 def run():
