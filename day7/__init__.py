@@ -34,7 +34,7 @@ def parse_line(line):
 def get_lines():
   with open('day7/input.txt', 'r') as f:
     for line in f.readlines():
-      yield line.rstrip()
+      yield parse_line(line.rstrip())
 
 
 class Directory:
@@ -43,12 +43,19 @@ class Directory:
     self.parent = parent
     self.children = []
 
+  def print(self, prefix=''):
+    print(prefix + self.name)
+    for child in self.children:
+      child.print(prefix + ' ') 
+
 
 class File:
   def __init__(self, name, size):
     self.name = name
     self.size = size
 
+  def print(self, prefix=''):
+    print(prefix + self.name + ' [' + str(self.size) + ']')
 
 class FsBuilder():
   def __init__(self, name):
@@ -72,22 +79,19 @@ class FsBuilder():
     self.pwd.children.append(d)
 
 
-def build_fs(fs, line):
-  if line[0] == FILE:
-    pass
-  elif line[1] == DIR:
-    pass
-  elif line[2] == CMD:
-    pass
-  return fs
-
-
 def part1():
-  fs = None
+  builder = None
   for line in get_lines():
-    if not fs and line[0] == CMD:
-
-
+    if not builder and line[0] == CMD and line[1][0] == 'cd':
+      builder = FsBuilder(line[1][1])
+    elif line[0] == CMD and line[1][0] == 'cd':
+      builder.cd(line[1][1])
+    elif line[0] == FILE:
+      builder.createFile(line[2], line[1])
+    elif line[0] == DIR:
+      builder.createDir(line[1])
+  builder.root.print()
+  
 
 def part2():
   pass
