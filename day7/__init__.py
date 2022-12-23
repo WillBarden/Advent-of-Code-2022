@@ -9,12 +9,6 @@ DIR = 'DIR'
 CMD = 'CMD'
 
 
-def get_lines():
-  with open('day7/input.txt', 'r') as f:
-    for line in f.readlines():
-      yield line.rstrip()
-
-
 def parse_file(line):
   m = re.findall('^(\d+)\s(\S+)$', line)
   return (FILE, m[0][0], m[0][1]) if m else None
@@ -37,6 +31,47 @@ def parse_line(line):
       return value
 
 
+def get_lines():
+  with open('day7/input.txt', 'r') as f:
+    for line in f.readlines():
+      yield line.rstrip()
+
+
+class Directory:
+  def __init__(self, name, parent=None):
+    self.name = name
+    self.parent = parent
+    self.children = []
+
+
+class File:
+  def __init__(self, name, size):
+    self.name = name
+    self.size = size
+
+
+class FsBuilder():
+  def __init__(self, name):
+    self.root = Directory(name)
+    self.pwd = self.root
+
+  def cd(self, name):
+    if name == '..':
+      self.pwd = self.pwd.parent if self.pwd.parent else self.pwd
+    else:
+      for child in self.pwd.children:
+        if isinstance(child, Directory) and child.name == name:
+          self.pwd = child
+
+  def createFile(self, name, size):
+    f = File(name, size)
+    self.pwd.children.append(f)
+
+  def createDir(self, name):
+    d = Directory(name, self.pwd)
+    self.pwd.children.append(d)
+
+
 def build_fs(fs, line):
   if line[0] == FILE:
     pass
@@ -48,8 +83,10 @@ def build_fs(fs, line):
 
 
 def part1():
+  fs = None
   for line in get_lines():
-    print(parse_line(line))
+    if not fs and line[0] == CMD:
+
 
 
 def part2():
