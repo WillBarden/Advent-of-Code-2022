@@ -61,7 +61,7 @@ class File:
     return self.size
 
   def print(self, prefix=''):
-    print(prefix + self.name + ' [' + str(self.size) + ']')
+    print(prefix + self.name + ' [' + str(self.get_size()) + ']')
 
 class FsBuilder():
   def __init__(self, name):
@@ -87,6 +87,18 @@ class FsBuilder():
     self.pwd.children.append(d)
 
 
+def dfs(func, fs, agg=None):
+  agg = func(agg, fs)
+  if isinstance(fs, Directory):
+    for child in fs.children:
+      agg = dfs(func, child, agg)    
+  return agg
+
+
+def collect(fs, filter=lambda x : True):
+  pass
+
+
 def get_fs():
   builder = None
   for line in get_lines():
@@ -103,7 +115,9 @@ def get_fs():
 
 def part1():
   fs = get_fs()
-  fs.print()
+  fc = dfs(count_files, fs, 0)
+  print(fc)
+  # fs.print()
   
 
 def part2():
