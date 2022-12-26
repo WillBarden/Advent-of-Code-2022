@@ -63,6 +63,7 @@ class File:
   def print(self, prefix=''):
     print(prefix + self.name + ' [' + str(self.get_size()) + ']')
 
+
 class FsBuilder():
   def __init__(self, name):
     self.root = Directory(name)
@@ -95,8 +96,10 @@ def dfs(func, fs, agg=None):
   return agg
 
 
-def collect(fs, filter=lambda x : True):
-  pass
+def collect(fs, filter=lambda val, agg : True):
+  def _collector(agg, val):
+    return agg + [val] if filter(val, agg) else agg
+  return dfs(_collector, fs, [])
 
 
 def get_fs():
@@ -113,15 +116,26 @@ def get_fs():
   builder.cd('/')
   return builder.root
 
+
 def part1():
   fs = get_fs()
-  fc = dfs(count_files, fs, 0)
-  print(fc)
-  # fs.print()
+  return sum([d.get_size() for d in collect(fs, lambda val, agg : isinstance(val, Directory) and val.get_size() <= 100000)])
   
 
 def part2():
-  pass
+  total_space = 70000000
+  required_space = 30000000
+  fs = get_fs()
+  unused_space = total_space - fs.get_size()
+  required_removal_space = required_space - unused_space
+  def _del_dir(agg, fp):
+    if isinstance(fp, Directory):
+      if not agg:
+        return fp
+      elif fp.get_size() >= required_removal_space:
+        return agg if agg.get_size() < fp.get_size() else fp
+    return agg
+  return dfs(_del_dir, fs, None).get_size()
 
 
 def run():
