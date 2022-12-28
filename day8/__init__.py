@@ -45,24 +45,42 @@ def right_scan(forest):
 
 def part1():
   forest = get_forest('day8/input.txt')
-  lview_forest = left_scan(forest)
-  rview_forest = right_scan(forest)
-  tview_forest = invert(left_scan(invert(forest)))
-  bview_forest = invert(right_scan(invert(forest)))
-  visible_trees = [[False] * len(row) for row in forest]
-  for i, row in enumerate(forest):
-    for j, tree in enumerate(row):
-      if i == 0 or i == len(row) - 1:
-        visible_trees[i][j] = True
-      elif j == 0 or j == len(forest) - 1:
-        visible_trees[i][j] = True
-      elif lview_forest[i][j - 1] < tree or rview_forest[i][j + 1] < tree or tview_forest[i - 1][j] < tree or bview_forest[i + 1][j] < tree:
-        visible_trees[i][j] = True
-  return sum([sum([1 if tree else 0 for tree in row]) for row in forest])
+  visible = [[False for _ in row] for row in forest]
+
+  for i in range(len(forest)):
+    max_height = -1
+    for j in range(len(forest[i])):
+      if forest[i][j] > max_height:
+        visible[i][j] = True
+        max_height = forest[i][j]
+
+  for i in range(len(forest)):
+    max_height = -1
+    for j in range(len(forest[i]) - 1, -1, -1):
+      if forest[i][j] > max_height:
+        visible[i][j] = True
+        max_height = forest[i][j]
+
+  for j in range(len(forest[0])):
+    max_height = -1
+    for i in range(len(forest)):
+      if forest[i][j] > max_height:
+        visible[i][j] = True
+        max_height = forest[i][j]
+
+  for j in range(len(forest[0])):
+    max_height = -1
+    for i in range(len(forest) -1, -1, -1):
+      if forest[i][j] > max_height:
+        visible[i][j] = True
+        max_height = forest[i][j]
+
+  return sum([sum([1 if tree else 0 for tree in row]) for row in visible])
 
 
 def part2():
-  pass
+  forest = get_forest('day8/input.txt')
+  visible = [[False for _ in row] for row in forest]
 
 
 def run():
