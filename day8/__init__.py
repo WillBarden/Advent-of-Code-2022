@@ -31,6 +31,7 @@ def scenic_score(forest, i, j):
       if forest[i][k] < height:
         dist += 1
       else:
+        dist += 1
         break
   score = dist
 
@@ -41,6 +42,7 @@ def scenic_score(forest, i, j):
       if forest[i][k] < height:
         dist += 1
       else:
+        dist += 1
         break
   score *= dist
 
@@ -51,6 +53,7 @@ def scenic_score(forest, i, j):
       if forest[k][j] < height:
         dist += 1
       else:
+        dist += 1
         break
   score *= dist
 
@@ -61,6 +64,7 @@ def scenic_score(forest, i, j):
       if forest[k][j] < height:
         dist += 1
       else:
+        dist += 1
         break
     score *= dist
   return score
