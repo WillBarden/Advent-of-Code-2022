@@ -19,28 +19,51 @@ def print_visible_trees(visible_trees):
   print_forest([['O' if tree else 'X' for tree in row] for row in visible_trees])
 
 
-def running_max(values):
-  return reduce(
-    lambda maxes, value : [value] if len(maxes) == 0 else maxes + [max(maxes[-1], value)], 
-    values, 
-    []
-  )
+def scenic_score(forest, i, j):
+  HEIGHT = len(forest[0])
+  WIDTH = len(forest[1])
+  height = forest[i][j]
 
+  # To the left
+  dist = 0
+  if j - 1 > 0:
+    for k in range(j - 1, -1, -1):
+      if forest[i][k] < height:
+        dist += 1
+      else:
+        break
+  score = dist
 
-def invert(matrix):
-  matrix_out = deepcopy(matrix)
-  for i in range(len(matrix)):
-    for j in range(len(matrix[i])):
-      matrix_out[i][j], matrix_out[j][i] = matrix[j][i], matrix[i][j]
-  return matrix_out
+  # To the right
+  dist = 0
+  if j + 1 < WIDTH:
+    for k in range(j + 1, WIDTH):
+      if forest[i][k] < height:
+        dist += 1
+      else:
+        break
+  score *= dist
 
+  # To the top
+  dist = 0
+  if i - 1 > 0:
+    for k in range(i - 1, -1, -1):
+      if forest[k][j] < height:
+        dist += 1
+      else:
+        break
+  score *= dist
 
-def left_scan(forest):
-  return [running_max(row) for row in forest]
-
-
-def right_scan(forest):
-  return [running_max(row[::-1])[::-1] for row in forest]
+  # To the bottom
+  dist = 0
+  if i + 1 < HEIGHT:
+    for k in range(i + 1, HEIGHT):
+      if forest[k][j] < height:
+        dist += 1
+      else:
+        break
+    score *= dist
+  return score
 
 
 def part1():
@@ -80,7 +103,11 @@ def part1():
 
 def part2():
   forest = get_forest('day8/input.txt')
-  visible = [[False for _ in row] for row in forest]
+  scores = [[0 for _ in row] for row in forest]
+  for i in range(len(forest)):
+    for j in range(len(forest[i])):
+      scores[i][j] = scenic_score(forest, i, j)
+  return max([max(row) for row in scores])
 
 
 def run():
